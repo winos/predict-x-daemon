@@ -1,0 +1,15 @@
+{
+  "sandbox": {
+    "host": "ds149144.mlab.com:49144",
+    "user": "winos",
+    "password": "test",
+    "db": "heroku_s4zngqdl"
+  },
+  "local": {
+    "host": "localhost:27017",
+    "user": "",
+    "password": "",
+    "db": "bitsignals"
+  },
+  "preferred": "local"
+}
