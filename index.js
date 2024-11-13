@@ -1,14 +1,12 @@
 'use strict';
 
-const db = require('./lib/db')(); // Usando tu configuración personalizada de conexión
+const db = require('./lib/db')(); 
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
 const moment = require('moment');
 
-// Conectar a la base de datos
 db.connect();
 
-// Definir el esquema de suscripción
 const subscriptionSchema = new mongoose.Schema({
   email: { type: String, required: true },
   expiresAt: { type: Date, required: true },
@@ -16,7 +14,6 @@ const subscriptionSchema = new mongoose.Schema({
 
 const Subscription = mongoose.model('Subscription', subscriptionSchema);
 
-// Configurar el transportador de correo electrónico con Nodemailer
 const transporter = nodemailer.createTransport({
   service: 'gmail', // Cambiar según el proveedor que uses
   auth: {
@@ -25,7 +22,6 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Función para enviar un correo electrónico
 async function sendEmail(to, subject, message) {
   try {
     const mailOptions = {
@@ -42,14 +38,11 @@ async function sendEmail(to, subject, message) {
   }
 }
 
-// Función para validar suscripciones y enviar correos
 async function validateSubscriptions() {
   try {
-    // Calcular el rango de fechas para 2 días antes de la expiración
     const twoDaysFromNow = moment().add(2, 'days').startOf('day').toDate();
     const oneDayFromNow = moment().add(2, 'days').endOf('day').toDate();
 
-    // Buscar suscripciones que expiran en 2 días
     const expiringSubscriptions = await Subscription.find({
       expiresAt: { $gte: twoDaysFromNow, $lte: oneDayFromNow }
     });
@@ -69,10 +62,8 @@ async function validateSubscriptions() {
   }
 }
 
-// Ejecutar la validación una vez al inicio
 validateSubscriptions();
 
-// Configurar el demonio para que se ejecute todos los días a las 8:00 AM usando node-cron
 const cron = require('node-cron');
 cron.schedule('0 8 * * *', validateSubscriptions, {
   timezone: "America/Mexico_City" // Ajusta según tu zona horaria
